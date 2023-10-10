@@ -3,3 +3,6 @@ venv/
 
 # Ignore environment files
 .env
+
+# Ignore pycache files
+utils/__pycache__
