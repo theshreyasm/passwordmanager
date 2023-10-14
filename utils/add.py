@@ -34,6 +34,7 @@ def addEntry(masterpassword, device_secret, website, url, email, username):
         password = getpass("Enter your password: ")
     else:
         password = generatePassword()
+        print("Secure password is generated.")
 
     masterkey = cipher.generateKey(masterpassword, device_secret)
     encrypted = cipher.encrypt(masterkey, password)
