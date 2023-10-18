@@ -59,6 +59,10 @@ def config():
     # close the cursor and database connection
     cursor.close()
     db.close()
+
+    print("Password manager is configured. Now you can access your password manager using your master password.")
+    
+    return
     
 
 
