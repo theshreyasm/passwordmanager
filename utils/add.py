@@ -31,7 +31,7 @@ def addEntry(masterpassword, device_secret, website, url, email, username):
         option = input("Do you want to use a secure system generated password? y or n? ")
 
     if(option == 'n'):
-        password = getpass("Enter your password: ")
+        password = getpass.getpass("Enter your password: ")
     else:
         password = generatePassword()
         print("Secure password is generated.")

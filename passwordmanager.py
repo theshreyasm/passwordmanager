@@ -1,5 +1,5 @@
 from utils.dbconfig import dbconfig
-from utils.add import addEntry
+from utils.add import addEntry, checkEntry
 from utils.retrieve import retrieve
 import hashlib
 import getpass
