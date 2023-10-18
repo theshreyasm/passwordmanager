@@ -27,7 +27,8 @@ def retrieve(masterpassword, device_secret, details):
     else:
         table = PrettyTable(cursor.column_names)
         for row in results:
-            table.add_row(row[0], row[1], row[2], row[3], "{hidden}")
+            table.add_row([row[0], row[1], row[2], row[3], "{hidden}"])
+        print(table)
 
         if len(results)==1:
             option = input("Do you want to retrieve the password for this entry? y or n? ")
