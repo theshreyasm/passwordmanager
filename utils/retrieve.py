@@ -1,5 +1,5 @@
-from dbconfig import dbconfig
-import cipher
+from utils.dbconfig import dbconfig
+import utils.cipher as cipher
 from prettytable import PrettyTable
 import pyperclip
 

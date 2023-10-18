@@ -1,6 +1,6 @@
 from utils.dbconfig import dbconfig
-from utils.add import addEntry, checkEntry
-from utils.retrieve import retrieve
+import utils.add as add
+import utils.retrieve as retrieve
 import hashlib
 import getpass
 
@@ -9,11 +9,11 @@ def authenticate():
 
     password = getpass.getpass("Enter master password for your password manager: ")
     
-    db = db.config()
+    db = dbconfig()
     cursor = db.cursor()
     query = 'SELECT * FROM passwordmanager.secrets'
     cursor.execute(query)
-    res = cursor.fetchall()
+    res = cursor.fetchone()
     salt = res[0]
     hashed_masterpassword = res[1]
     cursor.close()
@@ -37,20 +37,20 @@ def passwordmanager():
     masterpassword = auth[0]
     device_secret = auth[1]
 
-    option = input("1. Add new entry\n2. Retrieve all entries\n3. Search entry\n4. Exit\nInput option number. ")
+    option = input("\n1. Add new entry\n2. Retrieve all entries\n3. Search entry\n4. Exit\nInput option number. ")
 
     while(option != '4'):
 
         while(option != '1' and option != '2' and option != '3' and option !='4'):
             print("Input either 1, 2, 3, or 4.")
-            option = input("1. Add new entry\n2. Retrieve all entries\n3. Search entry\n4. Exit\nInput option number. ")
+            option = input("\n1. Add new entry\n2. Retrieve all entries\n3. Search entry\n4. Exit\nInput option number. ")
         
         if option == '4':
             return
         
         if option == '1':
 
-            website = input("Enter site name: ")
+            website = input("\nEnter site name: ")
             if website == "":
                 while website == "":
                     print("Site name cannot be empty.")
@@ -65,18 +65,18 @@ def passwordmanager():
             email = input("Enter email address: ")
             username = input("Enter username: ")
 
-            addEntry(masterpassword, device_secret, website, url, email, username)
+            add.addEntry(masterpassword, device_secret, website, url, email, username)
         
         if option == '2':
 
             details = {}
-            retrieve(masterpassword, device_secret, details)
+            retrieve.retrieve(masterpassword, device_secret, details)
 
         if option == '3':
 
             details = {}
 
-            website = input("Enter site name: ")
+            website = input("\nEnter site name: ")
             if website != "":
                 details['website'] = website
 
@@ -92,12 +92,12 @@ def passwordmanager():
             if email != "":
                 details['email'] = email
             
-            retrieve(masterpassword, device_secret, details)
+            retrieve.retrieve(masterpassword, device_secret, details)
 
-        option = input("1. Add new entry\n2. Retrieve all entries\n3. Search entry\n4. Exit\nInput option number. ")
+        option = input("\n1. Add new entry\n2. Retrieve all entries\n3. Search entry\n4. Exit\nInput option number. ")
     
     return
 
-
+passwordmanager()
 
 
