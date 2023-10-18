@@ -47,18 +47,17 @@ def main():
 
     while(option != '1' and option != '2' and option != '3'):
         print("Input either 1, 2, or 3.")
-        option = input("1. Configure your password manager.\n2. Access your password manager.\n3. Delete your password manager.\nInput option number. ")
+        option = input("\n1. Configure your password manager.\n2. Access your password manager.\n3. Delete your password manager.\nInput option number. ")
 
-    if option == 1:
-
+    if option == '1':
         if not checkConfig():
-            print("Provide master password to configure your password manager.")
+            print("\nProvide master password to configure your password manager.")
             config()
 
         else:
-            print("Password manager is already configured.")
+            print("\nPassword manager is already configured.")
         
-    if option == 2:
+    if option == '2':
 
         if checkConfig():
             pm.passwordmanager()
@@ -66,7 +65,7 @@ def main():
         else:
             print("Password manager not yet configured. Please configure the password manager to access it.")
     
-    if option == 3:
+    if option == '3':
 
         db = dbconfig()
         cursor = db.cursor()
@@ -86,7 +85,6 @@ def main():
     
     return
 
-if __name__ == main:
-    main()
+main()
 
     

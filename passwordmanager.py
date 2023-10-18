@@ -7,7 +7,7 @@ import getpass
 
 def authenticate():
 
-    password = getpass.getpass("Enter master password for your password manager: ")
+    password = getpass.getpass("\nEnter master password for your password manager: ")
     
     db = dbconfig()
     cursor = db.cursor()
