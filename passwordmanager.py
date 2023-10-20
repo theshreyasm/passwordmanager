@@ -50,11 +50,11 @@ def passwordmanager():
         
         if option == '1':
 
-            website = input("\nEnter site name: ")
-            if website == "":
-                while website == "":
+            sitename = input("\nEnter site name: ")
+            if sitename == "":
+                while sitename == "":
                     print("Site name cannot be empty.")
-                    website = input("Enter site name: ")
+                    sitename = input("Enter site name: ")
             
             url = input("Enter url: ")
             if url == "":
@@ -65,7 +65,7 @@ def passwordmanager():
             email = input("Enter email address: ")
             username = input("Enter username: ")
 
-            add.addEntry(masterpassword, device_secret, website, url, email, username)
+            add.addEntry(masterpassword, device_secret, sitename, url, email, username)
         
         if option == '2':
 
@@ -76,9 +76,9 @@ def passwordmanager():
 
             details = {}
 
-            website = input("\nEnter site name: ")
-            if website != "":
-                details['website'] = website
+            sitename = input("\nEnter site name: ")
+            if sitename != "":
+                details['sitename'] = sitename
 
             url = input("Enter url: ")
             if url != "":

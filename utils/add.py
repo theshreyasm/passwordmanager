@@ -3,11 +3,11 @@ import utils.cipher as cipher
 from utils.generate_password import generatePassword
 import getpass
 
-def checkEntry(website, url, email, username):
+def checkEntry(sitename, url, email, username):
     
     db = dbconfig()
     cursor = db.cursor()
-    query = f"SELECT * FROM passwordmanager.entries WHERE website = '{website}' AND url = '{url}' AND email = '{email}' AND username = '{username}'"
+    query = f"SELECT * FROM passwordmanager.entries WHERE sitename = '{sitename}' AND url = '{url}' AND email = '{email}' AND username = '{username}'"
     cursor.execute(query)
     results = cursor.fetchall()
 
@@ -18,9 +18,9 @@ def checkEntry(website, url, email, username):
         return True
     return False
 
-def addEntry(masterpassword, device_secret, website, url, email, username):
+def addEntry(masterpassword, device_secret, sitename, url, email, username):
 
-    if(checkEntry(website, url, email, username)):
+    if(checkEntry(sitename, url, email, username)):
         print("Entry with these details already exists.")
         return
     
@@ -41,8 +41,8 @@ def addEntry(masterpassword, device_secret, website, url, email, username):
 
     db = dbconfig()
     cursor = db.cursor()
-    query = "INSERT INTO passwordmanager.entries (website, url, email, username, password) values (%s, %s, %s, %s, %s)"
-    val = (website, url, email, username, encrypted)
+    query = "INSERT INTO passwordmanager.entries (sitename, url, email, username, password) values (%s, %s, %s, %s, %s)"
+    val = (sitename, url, email, username, encrypted)
     cursor.execute(query, val)
     db.commit()
 

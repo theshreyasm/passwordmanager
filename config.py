@@ -23,7 +23,7 @@ def config():
     cursor.execute(query)
 
     # create table entries to store all website info, usernames and passwords
-    query = "create table passwordmanager.entries (website TEXT NOT NULL, url TEXT NOT NULL, email TEXT, username TEXT, password TEXT NOT NULL)"
+    query = "create table passwordmanager.entries (sitename TEXT NOT NULL, url TEXT NOT NULL, email TEXT, username TEXT, password TEXT NOT NULL)"
     cursor.execute(query)
 
     # obtaining the user's master password
