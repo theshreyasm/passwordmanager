@@ -57,11 +57,6 @@ def passwordmanager():
                     sitename = input("Enter site name: ")
             
             url = input("Enter url: ")
-            if url == "":
-                while url == "":
-                    print("url cannot be empty.")
-                    url = input("Enter url: ")
-
             email = input("Enter email address: ")
             username = input("Enter username: ")
 
