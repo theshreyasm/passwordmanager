@@ -2,6 +2,54 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 from dbconfig import dbconfig
+import hashlib
+
+def auth():
+    window = Tk()
+    window.title("Password Manager")
+    window.geometry("700x300")
+    window.resizable(False, False)
+
+    password_label = tk.Label(window, text="Enter Master Password:  ")
+    password_label.place(relx=0.37, rely=0.5, anchor=CENTER)
+    password_entry = tk.Entry(window, show='*')
+    password_entry.place(relx=0.63, rely=0.5, anchor=CENTER)
+
+    status_label = tk.Label(window, text="", fg="green")
+    status_label.place(relx = 0.5, rely = 0.75, anchor=CENTER)
+    
+    def on_enter_click(event):
+        if event.char == '\r':
+            submit()
+
+    def submit():
+        
+        password = password_entry.get()
+        db = dbconfig()
+        cursor = db.cursor()
+        query = 'SELECT * FROM passwordmanager.secrets'
+        cursor.execute(query)
+        res = cursor.fetchone()
+        salt = res[0]
+        hashed_masterpassword = res[1]
+        cursor.close()
+        db.close()
+    
+        hashedpass = hashlib.sha256((salt + password).encode()).hexdigest()
+
+        if(hashedpass != hashed_masterpassword):
+            status_label.config(text="Incorrect password. Please try again.", fg="red")
+        else:
+            window.destroy()
+            display()
+
+    window.bind("<Key>", on_enter_click)
+
+    submit_button = tk.Button(window, text="Submit", command=submit)
+    submit_button.place(relx=0.5, rely=0.64, anchor=CENTER)
+
+    return window
+
 
 def display():
     db = dbconfig()
@@ -40,5 +88,5 @@ def display():
     window.resizable(True, True)
     return window
 
-home = display()
+home = auth()
 home.mainloop()
