@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 from dbconfig import dbconfig
+from edit import edit_row
 import hashlib
 
 def auth():
@@ -62,9 +63,9 @@ def display():
     window = Tk()
 
     frame = Frame(window)
-    frame.pack(side=tk.LEFT, padx=40)
+    frame.pack(side=tk.TOP, pady=150)
 
-    tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5), show="headings", height=cursor.rowcount)
+    tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5, 6), show="headings", height=cursor.rowcount)
     tv.pack()
 
     tv.heading(1, text="Site Name")
@@ -72,19 +73,31 @@ def display():
     tv.heading(3, text="Email Address")
     tv.heading(4, text="Username")
     tv.heading(5, text="Password")
+    tv.heading(6, text="Click to edit entry")
 
     tv.column(1, width=200, anchor='center')
     tv.column(2, width=250, anchor='center')
     tv.column(3, width=300, anchor='center')
     tv.column(4, width=200, anchor='center')
     tv.column(5, width=250, anchor='center')
+    tv.column(6, width=150, anchor='center')
 
     for row in rows:
         hidden_str = '{hidden}'
-        tv.insert('', 'end', values=row[:4] + (hidden_str,))
+        edit_str = 'Edit'
+        tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, ))
+
+    def on_cell_click(event):
+        item = tv.selection()[0]
+        if tv.identify_column(event.x) == "#6":
+            edit_row(item, window, tv)
+    
+    tv.bind('<ButtonRelease-1>', on_cell_click)
 
     window.title("Password Manager")
-    window.geometry("1300x800")
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    window.geometry(f"{screen_width}x{screen_height}")
     window.resizable(True, True)
     return window
 
