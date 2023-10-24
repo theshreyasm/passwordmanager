@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 from dbconfig import dbconfig
-from edit import edit_row
+import edit
 import hashlib
 import retrieve
 
@@ -66,7 +66,7 @@ def display():
     frame = Frame(window)
     frame.pack(side=tk.TOP, pady=150)
 
-    tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5, 6, 7), show="headings", height=cursor.rowcount)
+    tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5, 6, 7, 8), show="headings", height=cursor.rowcount)
     tv.pack()
 
     tv.heading(1, text="Site Name")
@@ -76,6 +76,7 @@ def display():
     tv.heading(5, text="Password")
     tv.heading(6, text="Click to edit entry")
     tv.heading(7, text="Click to copy password")
+    tv.heading(8, text="Click to delete entry")
 
     tv.column(1, width=200, anchor='center')
     tv.column(2, width=250, anchor='center')
@@ -84,21 +85,26 @@ def display():
     tv.column(5, width=100, anchor='center')
     tv.column(6, width=150, anchor='center')
     tv.column(7, width=200, anchor='center')
+    tv.column(8, width=200, anchor='center')
 
     for row in rows:
         hidden_str = '{hidden}'
         edit_str = 'Edit'
         copy_str = 'Copy Password to Clipboard'
+        delete_str = 'Delete'
         password = row[4]
-        tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, copy_str, ))
+        tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, copy_str, delete_str))
 
     def on_cell_click(event):
         item = tv.selection()[0]
         if tv.identify_column(event.x) == "#6":
-            edit_row(item, window, tv, password)
+            edit.edit_row(item, window, tv, password)
         
         if tv.identify_column(event.x) == "#7":
             retrieve.copy_password(item, tv)
+
+        if tv.identify_column(event.x) == "#8":
+            edit.delete_row(item, window, tv, frame)
     
     tv.bind('<ButtonRelease-1>', on_cell_click)
 

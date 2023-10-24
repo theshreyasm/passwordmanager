@@ -88,3 +88,38 @@ def edit_row(row_id, window, tv, password):
 
     save_button = tk.Button(edit_dialog, text="Save Changes", command=save_changes)
     save_button.grid(row=6, column=0, columnspan=2)
+
+def delete_row(row_id, window, tv, frame):
+    delete_dialog = tk.Toplevel(window)
+    # delete_dialog.geometry("600x200")
+    delete_dialog.title("Delete Entry")
+    delete_dialog.resizable(False, False)
+
+    delete_label = tk.Label(delete_dialog, text="Do you want to delete this entry from the password manager?\nIt cannot be recovered after deletion.", fg="red")
+    delete_label.grid(row=1, column=0)
+
+    def delete_yes():
+        details = {'sitename':tv.item(row_id, 'values')[0], 'url':tv.item(row_id, 'values')[1], 'email':tv.item(row_id, 'values')[2], 'username':tv.item(row_id, 'values')[3]}
+
+        db = dbconfig()
+        cursor = db.cursor()
+
+        query = "DELETE FROM passwordmanager.entries WHERE "
+        for i in details:
+            query += f"{i} = '{details[i]}' AND "
+        query = query[:-5]
+        cursor.execute(query)
+        db.commit()
+
+        delete_dialog.destroy()
+        tv.delete(row_id)
+
+    def delete_no():
+        delete_dialog.destroy()
+
+    yes_button = tk.Button(delete_dialog, text="Yes", command=delete_yes)
+    yes_button.grid(row=3, column=0, columnspan=2)
+
+    no_button = tk.Button(delete_dialog, text="No", command=delete_no)
+    no_button.grid(row=4, column=0, columnspan=3)
+    
