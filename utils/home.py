@@ -85,12 +85,13 @@ def display():
     for row in rows:
         hidden_str = '{hidden}'
         edit_str = 'Edit'
+        password = row[4]
         tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, ))
 
     def on_cell_click(event):
         item = tv.selection()[0]
         if tv.identify_column(event.x) == "#6":
-            edit_row(item, window, tv)
+            edit_row(item, window, tv, password)
     
     tv.bind('<ButtonRelease-1>', on_cell_click)
 
