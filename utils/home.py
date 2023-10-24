@@ -5,6 +5,7 @@ from dbconfig import dbconfig
 import edit
 import hashlib
 import retrieve
+import add
 
 def auth():
     window = Tk()
@@ -95,6 +96,9 @@ def display():
         password = row[4]
         tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, copy_str, delete_str))
 
+    def new_entry():
+        add.add_row(window, tv)
+
     def on_cell_click(event):
         item = tv.selection()[0]
         if tv.identify_column(event.x) == "#6":
@@ -107,6 +111,9 @@ def display():
             edit.delete_row(item, window, tv, frame)
     
     tv.bind('<ButtonRelease-1>', on_cell_click)
+
+    add_entry_button = tk.Button(window, text="Add Entry", command=new_entry)
+    add_entry_button.pack()
 
     window.title("Password Manager")
     screen_width = window.winfo_screenwidth()
