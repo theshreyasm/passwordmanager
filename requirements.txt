@@ -1,0 +1,10 @@
+cffi==1.16.0
+cryptography==41.0.4
+mysql-connector-python==8.1.0
+prettytable==3.9.0
+protobuf==4.21.12
+pycparser==2.21
+pyperclip==1.8.2
+python-dotenv==1.0.0
+tk==0.1.0
+wcwidth==0.2.8
