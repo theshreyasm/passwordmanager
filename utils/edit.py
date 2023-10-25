@@ -113,6 +113,7 @@ def delete_row(row_id, window, tv, frame):
 
         delete_dialog.destroy()
         tv.delete(row_id)
+        tv.configure(height=tv.cget("height")-1)
 
     def delete_no():
         delete_dialog.destroy()
