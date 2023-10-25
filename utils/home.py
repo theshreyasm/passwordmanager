@@ -53,8 +53,7 @@ def auth():
 
     return window
 
-
-def display():
+def query_database(tv):
     db = dbconfig()
     cursor = db.cursor()
 
@@ -62,12 +61,24 @@ def display():
     cursor.execute(query)
     rows = cursor.fetchall()
 
+    tv.configure(height=cursor.rowcount)
+
+    for row in rows:
+        hidden_str = '{hidden}'
+        edit_str = 'Edit'
+        copy_str = 'Copy Password to Clipboard'
+        delete_str = 'Delete'
+        password = row[4]
+        tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, copy_str, delete_str))
+
+def display():
+    
     window = Tk()
 
     frame = Frame(window)
     frame.pack(side=tk.TOP, pady=150)
 
-    tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5, 6, 7, 8), show="headings", height=cursor.rowcount)
+    tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5, 6, 7, 8), show="headings", height=0)
     tv.pack()
 
     tv.heading(1, text="Site Name")
@@ -88,13 +99,7 @@ def display():
     tv.column(7, width=200, anchor='center')
     tv.column(8, width=200, anchor='center')
 
-    for row in rows:
-        hidden_str = '{hidden}'
-        edit_str = 'Edit'
-        copy_str = 'Copy Password to Clipboard'
-        delete_str = 'Delete'
-        password = row[4]
-        tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, copy_str, delete_str))
+    query_database(tv)
 
     def new_entry():
         add.add_row(window, tv)
