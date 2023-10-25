@@ -1,6 +1,6 @@
-from dbconfig import dbconfig
-import cipher as cipher
-from generate_password import generatePassword
+from utils.dbconfig import dbconfig
+import utils.cipher as cipher
+from utils.generate_password import generatePassword
 import getpass
 import tkinter as tk
 from tkinter import ttk

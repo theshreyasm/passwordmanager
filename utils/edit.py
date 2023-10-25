@@ -1,9 +1,9 @@
-from dbconfig import dbconfig
-import cipher
+from utils.dbconfig import dbconfig
+import utils.cipher as cipher
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
-import generate_password
+import utils.generate_password as generate_password
 
 def checkEntry(sitename, url, email, username):
     

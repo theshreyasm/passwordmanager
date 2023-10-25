@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
-from dbconfig import dbconfig
-import edit
+from utils.dbconfig import dbconfig
+import utils.edit as edit
 import hashlib
-import retrieve
-import add
+import utils.retrieve as retrieve
+import utils.add as add
 
 def auth():
     window = Tk()
@@ -185,5 +185,3 @@ def display():
     window.resizable(True, True)
     return window
 
-home = display()
-home.mainloop()
