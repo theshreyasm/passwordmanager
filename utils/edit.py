@@ -5,9 +5,24 @@ from tkinter import ttk
 from tkinter import *
 import generate_password
 
-def edit_row(row_id, window, tv, password):
+def checkEntry(sitename, url, email, username):
+    
+    db = dbconfig()
+    cursor = db.cursor()
+    query = f"SELECT * FROM passwordmanager.entries WHERE sitename = '{sitename}' AND url = '{url}' AND email = '{email}' AND username = '{username}'"
+    cursor.execute(query)
+    results = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+    
+    if len(results)!=0:
+        return True
+    return False
+
+def edit_row(row_id, window, tv):
     edit_dialog = tk.Toplevel(window)
-    edit_dialog.geometry("600x200")
+    edit_dialog.geometry("400x150")
     edit_dialog.title("Edit Entry")
     edit_dialog.resizable(False, False)
 
@@ -35,59 +50,111 @@ def edit_row(row_id, window, tv, password):
     username_entry.grid(row=3, column=1)
     username_entry.insert(0, tv.item(row_id, 'values')[3])
 
-    password_label = tk.Label(edit_dialog, text="Password:")
-    password_label.grid(row=4, column=0)
-    password_entry = tk.Entry(edit_dialog, width=30, show='*')
-    password_entry.grid(row=4, column=1)
-    password_entry.insert(0, password)
-
     status_label = tk.Label(edit_dialog, text="", fg="green")
     status_label.place(relx=0.28, rely=0.9, anchor=CENTER)
-
-    def generate_new_password():
-        password = generate_password.generatePassword()
-        password_entry.delete(0, "end")
-        password_entry.insert(0, password)
-        status_label.config(text="New secure password is generated.")
 
     def save_changes():
         new_sitename = sitename_entry.get()
         new_url = url_entry.get()
         new_email = email_entry.get()
         new_username = username_entry.get()
-        new_password = password_entry.get()
 
         old_sitename = tv.item(row_id, 'values')[0]
         old_url = tv.item(row_id, 'values')[1]
         old_email = tv.item(row_id, 'values')[2]
         old_username = tv.item(row_id, 'values')[3]
-        old_password = password
 
-        tv.item(row_id, values=(new_sitename, new_url, new_email, new_username, new_password))
-        edit_dialog.destroy()
-
-        db = dbconfig()
-        cursor = db.cursor()
-
-        query = "SELECT * FROM passwordmanager.secrets"
-        cursor.execute(query)
-        row = cursor.fetchone()
-        masterpassword = row[1]
-        device_secret = row[2]
-
-        masterkey = cipher.generateKey(masterpassword, device_secret)
-        encrypted = cipher.encrypt(masterkey, new_password)
-        encrypted = encrypted.decode()
-
-        query = f"UPDATE passwordmanager.entries SET sitename = '{new_sitename}', url = '{new_url}', email = '{new_email}', username = '{new_username}', password = \"{encrypted}\" WHERE sitename = '{old_sitename}' AND url = '{old_url}' AND email = '{old_email}' AND username = '{old_username}'"
-        cursor.execute(query)
-        db.commit()
+        if(new_sitename == ''):
+            status_label.config(text="Sitename cannot be empty.", fg="red")
         
-    generate_password_button = tk.Button(edit_dialog, text="Generate new secure password", command=generate_new_password)
-    generate_password_button.grid(row=4, column=2, columnspan=2)
+        elif(checkEntry(new_sitename, new_url, new_email, new_username)):
+            status_label.config(text="Entry with these details already exists.", fg="red")
+
+        else:
+            db = dbconfig()
+            cursor = db.cursor()
+
+            # query = f"UPDATE passwordmanager.entries SET sitename = '{new_sitename}', url = '{new_url}', email = '{new_email}', username = '{new_username}', password = \"{encrypted}\" WHERE sitename = '{old_sitename}' AND url = '{old_url}' AND email = '{old_email}' AND username = '{old_username}'"
+            query = f"UPDATE passwordmanager.entries SET sitename = '{new_sitename}', url = '{new_url}', email = '{new_email}', username = '{new_username}' WHERE sitename = '{old_sitename}' AND url = '{old_url}' AND email = '{old_email}' AND username = '{old_username}'"
+            cursor.execute(query)
+            db.commit()
+
+            tv.item(row_id, values=(new_sitename, new_url, new_email, new_username, '{hidden}', 'Edit Entry', 'Edit Password', 'Copy Password to Clipboard', 'Delete'))
+            edit_dialog.destroy()
 
     save_button = tk.Button(edit_dialog, text="Save Changes", command=save_changes)
     save_button.grid(row=6, column=0, columnspan=2)
+
+def edit_password(row_id, window, tv):
+
+    sitename = tv.item(row_id, 'values')[0]
+    url = tv.item(row_id, 'values')[1]
+    email = tv.item(row_id, 'values')[2]
+    username = tv.item(row_id, 'values')[3]
+
+    edit_dialog = tk.Toplevel(window)
+    edit_dialog.geometry("400x150")
+    edit_dialog.title("Edit Password")
+    edit_dialog.resizable(False, False)
+
+    password_label = tk.Label(edit_dialog, text="Enter password:")
+    password_label.grid(row=0, column=0)
+    password_entry = tk.Entry(edit_dialog, width=30, show='*')
+    password_entry.grid(row=0, column=1)
+
+    confirm_password_label = tk.Label(edit_dialog, text="Confirm password:")
+    confirm_password_label.grid(row=1, column=0)
+    confirm_password_entry = tk.Entry(edit_dialog, width=30, show='*')
+    confirm_password_entry.grid(row=1, column=1)
+
+    status_label = tk.Label(edit_dialog, text="", fg="green")
+    status_label.grid(row=3, column=0, columnspan=2)
+
+    def save():
+
+        password = password_entry.get()
+        confirm_password = confirm_password_entry.get()
+
+        if password == '':
+            status_label.config(text="Password cannot be empty.", fg="red")
+
+        elif password != confirm_password:
+            status_label.config(text="Passwords do not match.", fg="red")
+
+        else:
+
+            db = dbconfig()
+            cursor = db.cursor()
+
+            query = "SELECT * FROM passwordmanager.secrets"
+            cursor.execute(query)
+            row = cursor.fetchone()
+            masterpassword = row[1]
+            device_secret = row[2]
+
+            masterkey = cipher.generateKey(masterpassword, device_secret)
+            encrypted = cipher.encrypt(masterkey, password)
+            encrypted = encrypted.decode()
+
+            query = f"UPDATE passwordmanager.entries SET password = \"{encrypted}\" WHERE sitename = '{sitename}' AND url = '{url}' AND email = '{email}' AND username = '{username}'"
+            cursor.execute(query)
+            db.commit()
+            edit_dialog.destroy()
+
+    def generate_new_password():
+        password = generate_password.generatePassword()
+        password_entry.delete(0, "end")
+        password_entry.insert(0, password)
+        confirm_password_entry.delete(0, "end")
+        confirm_password_entry.insert(0, password)
+        status_label.config(text="New secure password is generated.")
+    
+    generate_password_button = tk.Button(edit_dialog, text="Use a secure system-generated password", command=generate_new_password)
+    generate_password_button.grid(row=6, column=0, columnspan=2)
+
+    save_button = tk.Button(edit_dialog, text="Save Password", command=save)
+    save_button.grid(row=8, column=0, columnspan=2)
+
 
 def delete_row(row_id, window, tv, frame):
     delete_dialog = tk.Toplevel(window)

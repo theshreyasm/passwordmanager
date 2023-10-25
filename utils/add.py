@@ -132,7 +132,7 @@ def add_row(window, tv):
             cursor.execute(query, val)
             db.commit()
 
-            row_values = (sitename, url, email, username, '{hidden}', 'Edit', 'Copy Password to Clipboard', 'Delete')
+            row_values = (sitename, url, email, username, '{hidden}', 'Edit Entry', 'Edit Password', 'Copy Password to Clipboard', 'Delete')
             add_dialog.destroy()
             tv.insert('', 'end', values=row_values)
             tv.configure(height=tv.cget("height")+1)

@@ -66,11 +66,11 @@ def query_database(tv, sitename, url, email, username):
 
     for row in rows:
         hidden_str = '{hidden}'
-        edit_str = 'Edit'
+        edit_str = 'Edit Entry'
+        editpass_str = 'Edit Password'
         copy_str = 'Copy Password to Clipboard'
         delete_str = 'Delete'
-        password = row[4]
-        tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, copy_str, delete_str))
+        tv.insert('', 'end', values=row[:4] + (hidden_str, edit_str, editpass_str, copy_str, delete_str))
 
 def display():
     
@@ -82,7 +82,7 @@ def display():
     frame = Frame(window)
     frame.pack(pady=50)
 
-    tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5, 6, 7, 8), show="headings", height=0)
+    tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5, 6, 7, 8, 9), show="headings", height=0)
     tv.pack()
 
     def search():
@@ -140,8 +140,9 @@ def display():
     tv.heading(4, text="Username")
     tv.heading(5, text="Password")
     tv.heading(6, text="Click to edit entry")
-    tv.heading(7, text="Click to copy password")
-    tv.heading(8, text="Click to delete entry")
+    tv.heading(7, text="Click to edit password")
+    tv.heading(8, text="Click to copy password")
+    tv.heading(9, text="Click to delete entry")
 
     tv.column(1, width=200, anchor='center')
     tv.column(2, width=250, anchor='center')
@@ -151,6 +152,7 @@ def display():
     tv.column(6, width=150, anchor='center')
     tv.column(7, width=200, anchor='center')
     tv.column(8, width=200, anchor='center')
+    tv.column(9, width=200, anchor='center')
 
     query_database(tv, '', '', '', '')
 
@@ -160,12 +162,15 @@ def display():
     def on_cell_click(event):
         item = tv.selection()[0]
         if tv.identify_column(event.x) == "#6":
-            edit.edit_row(item, window, tv, password)
-        
+            edit.edit_row(item, window, tv)
+
         if tv.identify_column(event.x) == "#7":
+            edit.edit_password(item, window, tv)
+        
+        if tv.identify_column(event.x) == "#8":
             retrieve.copy_password(item, tv)
 
-        if tv.identify_column(event.x) == "#8":
+        if tv.identify_column(event.x) == "#9":
             edit.delete_row(item, window, tv, frame)
     
     tv.bind('<ButtonRelease-1>', on_cell_click)
@@ -180,5 +185,5 @@ def display():
     window.resizable(True, True)
     return window
 
-home = auth()
+home = display()
 home.mainloop()
