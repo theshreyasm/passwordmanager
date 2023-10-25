@@ -1,6 +1,6 @@
 from utils.dbconfig import dbconfig
 import config
-import utils.home as home
+import home as home
 
 def checkConfig():
 
