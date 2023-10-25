@@ -51,7 +51,7 @@ def edit_row(row_id, window, tv):
     username_entry.insert(0, tv.item(row_id, 'values')[3])
 
     status_label = tk.Label(edit_dialog, text="", fg="green")
-    status_label.place(relx=0.28, rely=0.9, anchor=CENTER)
+    status_label.grid(row=5, columnspan=2)
 
     def save_changes():
         new_sitename = sitename_entry.get()
@@ -74,7 +74,6 @@ def edit_row(row_id, window, tv):
             db = dbconfig()
             cursor = db.cursor()
 
-            # query = f"UPDATE passwordmanager.entries SET sitename = '{new_sitename}', url = '{new_url}', email = '{new_email}', username = '{new_username}', password = \"{encrypted}\" WHERE sitename = '{old_sitename}' AND url = '{old_url}' AND email = '{old_email}' AND username = '{old_username}'"
             query = f"UPDATE passwordmanager.entries SET sitename = '{new_sitename}', url = '{new_url}', email = '{new_email}', username = '{new_username}' WHERE sitename = '{old_sitename}' AND url = '{old_url}' AND email = '{old_email}' AND username = '{old_username}'"
             cursor.execute(query)
             db.commit()
@@ -83,7 +82,7 @@ def edit_row(row_id, window, tv):
             edit_dialog.destroy()
 
     save_button = tk.Button(edit_dialog, text="Save Changes", command=save_changes)
-    save_button.grid(row=6, column=0, columnspan=2)
+    save_button.grid(row=4, column=0, columnspan=2)
 
 def edit_password(row_id, window, tv):
 
@@ -147,7 +146,7 @@ def edit_password(row_id, window, tv):
         password_entry.insert(0, password)
         confirm_password_entry.delete(0, "end")
         confirm_password_entry.insert(0, password)
-        status_label.config(text="New secure password is generated.")
+        status_label.config(text="New secure password is generated.", fg="green")
     
     generate_password_button = tk.Button(edit_dialog, text="Use a secure system-generated password", command=generate_new_password)
     generate_password_button.grid(row=6, column=0, columnspan=2)
