@@ -53,14 +53,15 @@ def auth():
 
     return window
 
-def query_database(tv):
+def query_database(tv, sitename, url, email, username):
     db = dbconfig()
     cursor = db.cursor()
 
-    query = "SELECT * FROM passwordmanager.entries"
+    query = f"SELECT * FROM passwordmanager.entries WHERE sitename LIKE '{sitename}%' AND url LIKE '{url}%' AND email LIKE '{email}%' AND username LIKE '{username}%'"
     cursor.execute(query)
     rows = cursor.fetchall()
 
+    tv.delete(*tv.get_children())
     tv.configure(height=cursor.rowcount)
 
     for row in rows:
@@ -75,11 +76,63 @@ def display():
     
     window = Tk()
 
+    search_frame = tk.Frame(window)
+    search_frame.pack(pady=50)
+
     frame = Frame(window)
-    frame.pack(side=tk.TOP, pady=150)
+    frame.pack(pady=50)
 
     tv = ttk.Treeview(frame, columns=(1, 2, 3, 4, 5, 6, 7, 8), show="headings", height=0)
     tv.pack()
+
+    def search():
+        sitename = sitename_entry.get()
+        url = url_entry.get()
+        email = email_entry.get()
+        username = username_entry.get()
+
+        query_database(tv, sitename, url, email, username)
+
+    def clear_search():
+
+        sitename_entry.delete(0, 'end')
+        url_entry.delete(0, 'end')
+        email_entry.delete(0, 'end')
+        username_entry.delete(0, 'end')
+        query_database(tv, '', '', '', '')
+
+
+    sitename_label = tk.Label(search_frame, text="Site Name:")
+    sitename_label.pack(side=tk.LEFT)
+    sitename_entry = tk.Entry(search_frame, width=30)
+    sitename_entry.pack(side=tk.LEFT, padx=5)
+
+    url_label = tk.Label(search_frame, text="       URL:")
+    url_label.pack(side=tk.LEFT)
+    url_entry = tk.Entry(search_frame, width=30)
+    url_entry.pack(side=tk.LEFT, padx=5)
+
+    email_label = tk.Label(search_frame, text="     Email:")
+    email_label.pack(side=tk.LEFT)
+    email_entry = tk.Entry(search_frame, width=30)
+    email_entry.pack(side=tk.LEFT, padx=5)
+
+    username_label = tk.Label(search_frame, text="      Username:")
+    username_label.pack(side=tk.LEFT)
+    username_entry = tk.Entry(search_frame, width=30)
+    username_entry.pack(side=tk.LEFT, padx=5)
+
+    spacer_label = tk.Label(search_frame, text="        ")
+    spacer_label.pack(side=tk.LEFT)
+    
+    search_button = tk.Button(search_frame, text="Search", command=search)
+    search_button.pack(side=tk.LEFT)
+
+    spacer_label = tk.Label(search_frame, text="        ")
+    spacer_label.pack(side=tk.LEFT)
+
+    clear_search_button = tk.Button(search_frame, text="Clear searches", command=clear_search)
+    clear_search_button.pack(side=tk.LEFT)
 
     tv.heading(1, text="Site Name")
     tv.heading(2, text="Url")
@@ -99,7 +152,7 @@ def display():
     tv.column(7, width=200, anchor='center')
     tv.column(8, width=200, anchor='center')
 
-    query_database(tv)
+    query_database(tv, '', '', '', '')
 
     def new_entry():
         add.add_row(window, tv)
@@ -117,8 +170,8 @@ def display():
     
     tv.bind('<ButtonRelease-1>', on_cell_click)
 
-    add_entry_button = tk.Button(window, text="Add Entry", command=new_entry)
-    add_entry_button.pack()
+    add_entry_button = tk.Button(frame, text="Add Entry", command=new_entry)
+    add_entry_button.pack(pady=15)
 
     window.title("Password Manager")
     screen_width = window.winfo_screenwidth()
