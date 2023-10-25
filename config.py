@@ -3,6 +3,9 @@ import getpass
 import hashlib
 import random
 import string
+import tkinter as tk
+from tkinter import ttk
+from tkinter import *
 
 
 def generateRandomString(length):
@@ -12,7 +15,6 @@ def generateRandomString(length):
 
 def config():
 
-    # creating a new database
     db = dbconfig()
     cursor = db.cursor()
 
@@ -26,48 +28,70 @@ def config():
     query = "create table passwordmanager.entries (sitename TEXT NOT NULL, url TEXT, email TEXT, username TEXT, password TEXT NOT NULL)"
     cursor.execute(query)
 
-    # obtaining the user's master password
-    masterpassword = ""
+    window = Tk()
+    window.title("Configure Password Manager")
+    window.geometry("700x300")
+    window.resizable(False, False)
 
-    while(True):
-        masterpassword = getpass.getpass("Enter your Master Password: ")
-        if masterpassword == "":
-            print("Password cannot be empty.")
-            continue
-        confirmpassword = getpass.getpass("Confirm your Master Password: ")
-        if masterpassword != confirmpassword:
-            print("Passwords do not match.")
-            continue
-        print("Master password is set. Do not lose this password as it cannot be recovered and you cannot access your passwords without the master password.")
-        break
+    password_frame = tk.Frame(window)
+    password_frame.pack()
 
-    # generate the salt to be used to hash the master password
-    salt = generateRandomString(length = 25)
-
-    # hash the master password after adding the salt
-    hashedpass = hashlib.sha256((salt + masterpassword).encode()).hexdigest()
-
-    # generate device secret 
-    device_secret = generateRandomString(length = 15)
-
-    # insert salt, hashed password and device secret in the secrets table
-    query = "INSERT INTO passwordmanager.secrets (salt, masterpassword_hash, device_secret) VALUES (%s, %s, %s)"
-    val = (salt, hashedpass, device_secret)
-    cursor.execute(query, val)
-    db.commit()
-
-    # close the cursor and database connection
-    cursor.close()
-    db.close()
-
-    print("Password manager is configured. Now you can access your password manager using your master password.")
+    text_label = tk.Label(password_frame, text="Create master password for your password manager.", fg="green")
+    text_label.grid(row=0, columnspan=2, pady=20)
     
-    return
-    
+    password_label = tk.Label(password_frame, text="Enter Master Password:")
+    password_label.grid(row=1, column=0)
+    password_entry = tk.Entry(password_frame, width=30, show='*')
+    password_entry.grid(row=1, column=1)
+
+    confirm_password_label = tk.Label(password_frame, text="Confirm Master Password:")
+    confirm_password_label.grid(row=2, column=0)
+    confirm_password_entry = tk.Entry(password_frame, width=30, show='*')
+    confirm_password_entry.grid(row=2, column=1)
+
+    status_label = tk.Label(password_frame, text="", fg="red")
+    status_label.grid(row=4, columnspan=2)
 
 
+    def save(): 
 
+        password = password_entry.get()
+        confirm_password = confirm_password_entry.get()
+
+        if password == "":
+            status_label.config(text="Password cannot be empty.")
         
+        elif password != confirm_password:
+            status_label.config(text="Passwords do not match.")
+
+        else:
+            
+            salt = generateRandomString(length = 25)
+            hashedpass = hashlib.sha256((salt + password).encode()).hexdigest()
+            device_secret = generateRandomString(length = 15)
+
+            query = "INSERT INTO passwordmanager.secrets (salt, masterpassword_hash, device_secret) VALUES (%s, %s, %s)"
+            val = (salt, hashedpass, device_secret)
+            cursor.execute(query, val)
+            db.commit() 
+
+            cursor.close()
+            db.close()
+
+            window.destroy()
+
+            warning_window = Tk()
+            warning_window.title("Warning")
+            warning_window.resizable(False, False)
+
+            warning_label = tk.Label(warning_window, text="Master password is set for your password manager.\nDo not lose this master password as you cannot access your password manager without it.\nReopen this application to access your password manager.", fg="red")
+            warning_label.pack(padx=30, pady=30)
+
+            return warning_window
+    
+    save_button = tk.Button(password_frame, text="Save Master Password", command=save)
+    save_button.grid(row=3, columnspan=2, pady=20)
+    return window
 
 
 
